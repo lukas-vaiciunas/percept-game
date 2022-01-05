@@ -6,6 +6,11 @@ CollidableTile::CollidableTile(float x, float y, unsigned int imageId, const Ima
 	Collidable(x, y, imageData.getImage(imageId).width(), imageData.getImage(imageId).height())
 {}
 
+CollidableTile *CollidableTile::clone() const
+{
+	return new CollidableTile(*this);
+}
+
 void CollidableTile::render(const ImageData &imageData) const
 {
 	this->render_(this->x(), this->y(), imageData);

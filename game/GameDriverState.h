@@ -12,6 +12,7 @@ class GameState;
 #include "BulletPool.h"
 #include "ParticlePool.h"
 #include "HealthDisplay.h"
+#include "MinimapDisplay.h"
 
 class GameDriverState :
 	public DriverState,
@@ -35,6 +36,7 @@ private:
 	ParticlePool particlePool_;
 
 	HealthDisplay healthDisplay_;
+	MinimapDisplay minimapDisplay_;
 
 	unsigned int difficultyMult_;
 

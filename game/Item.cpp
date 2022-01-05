@@ -1,6 +1,7 @@
 #include "Item.h"
 
 Item::Item(const std::string &statusString, const Image &image) :
+	Cloneable(),
 	statusString_(statusString),
 	image_(image)
 {}

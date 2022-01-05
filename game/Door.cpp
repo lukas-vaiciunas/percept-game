@@ -9,6 +9,11 @@ Door::Door(float x, float y, const std::string &levelPath, const Image &image) :
 	isDiscovered_(false)
 {}
 
+Door *Door::clone() const
+{
+	return new Door(*this);
+}
+
 void Door::render() const
 {
 	image_.render(this->x(), this->y());

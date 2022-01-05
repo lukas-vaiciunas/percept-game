@@ -2,6 +2,7 @@
 #include "ImageData.h"
 
 Tile::Tile(unsigned int imageId) :
+	Cloneable(),
 	imageId_(imageId),
 	isDiscovered_(false)
 {}

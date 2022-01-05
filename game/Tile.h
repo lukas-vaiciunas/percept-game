@@ -3,7 +3,9 @@
 class ImageData;
 struct ALLEGRO_COLOR;
 
-class Tile
+#include "Cloneable.h"
+
+class Tile : public Cloneable
 {
 private:
 	unsigned int imageId_;
@@ -14,6 +16,8 @@ protected:
 public:
 	Tile(unsigned int imageId);
 	virtual ~Tile() {}
+
+	virtual Tile *clone() const override = 0;
 
 	void discover();
 

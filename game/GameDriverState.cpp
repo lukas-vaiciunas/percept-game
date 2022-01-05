@@ -22,7 +22,11 @@ GameDriverState::GameDriverState(EventQueue &driverEventQueue) :
 	camera_(0.0f, 0.0f),
 	bulletPool_(100),
 	particlePool_(100),
-	healthDisplay_(0.0f, 0.0f),
+	healthDisplay_(1.0f, 1.0f),
+	minimapDisplay_(
+		Config::displayWidth / Config::hudScale - 34.0f - 1.0f,
+		1.0f,
+		4, 4),
 	difficultyMult_(1)
 {
 	gameEventQueue_.attach(this);
@@ -151,6 +155,7 @@ void GameDriverState::changeLevel_(const char *const levelPath)
 {
 	level_ = Level(levelPath, difficultyMult_);
 	player_.spawn(level_.spawnX(), level_.spawnY());
+	minimapDisplay_.updateOnPlayerMove(player_.x(), player_.y());
 
 	float playerCX = player_.x() + player_.width() * 0.5f;
 	float playerCY = player_.y() + player_.height() * 0.5f;

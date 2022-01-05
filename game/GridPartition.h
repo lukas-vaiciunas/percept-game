@@ -24,15 +24,15 @@ public:
 	void removeAtCoords(const std::pair<unsigned int, unsigned int> &coords, const T *const item);
 	void removeAtCoords(unsigned int col, unsigned int row, const T *const item);
 
-	const std::vector<T *> getItemsNearPos(
+	std::vector<T *> getItemsNearPos(
 		float x, float y,
 		unsigned int radiusXInCells, unsigned int radiusYInCells) const;
 
-	const std::vector<T *> getItemsNearCoords(
+	std::vector<T *> getItemsNearCoords(
 		unsigned int col, unsigned int row,
 		unsigned int radiusXInCells, unsigned int radiusYInCells) const;
 
-	const std::pair<unsigned int, unsigned int> posToCoords(float x, float y) const;
+	std::pair<unsigned int, unsigned int> posToCoords(float x, float y) const;
 };
 
 template<typename T>
@@ -46,7 +46,7 @@ GridPartition<T>::GridPartition(unsigned int numCols, unsigned int numRows, unsi
 template<typename T>
 void GridPartition<T>::add(T *const item)
 {
-	std::pair<unsigned int, unsigned int> coords = this->posToCoords(item->x() + item->width() * 0.5f, item->y() + item->height() * 0.5f);
+	std::pair<unsigned int, unsigned int> coords = std::move(this->posToCoords(item->x() + item->width() * 0.5f, item->y() + item->height() * 0.5f));
 
 	this->addAtCoords(coords, item);
 }
@@ -66,7 +66,7 @@ void GridPartition<T>::addAtCoords(unsigned int col, unsigned int row, T *const 
 template<typename T>
 void GridPartition<T>::remove(const T *const item)
 {
-	std::pair<unsigned int, unsigned int> coords = this->posToCoords(item->x() + item->width() * 0.5f, item->y() + item->height() * 0.5f);
+	std::pair<unsigned int, unsigned int> coords = std::move(this->posToCoords(item->x() + item->width() * 0.5f, item->y() + item->height() * 0.5f));
 
 	this->removeAtCoords(coords, item);
 }
@@ -84,17 +84,17 @@ void GridPartition<T>::removeAtCoords(unsigned int col, unsigned int row, const 
 }
 
 template<typename T>
-const std::vector<T *> GridPartition<T>::getItemsNearPos(
+std::vector<T *> GridPartition<T>::getItemsNearPos(
 	float x, float y,
 	unsigned int radiusXInCells, unsigned int radiusYInCells) const
 {
-	std::pair<unsigned int, unsigned int> coords = this->posToCoords(x, y);
+	std::pair<unsigned int, unsigned int> coords = std::move(this->posToCoords(x, y));
 
 	return this->getTilesNearCoords(coords.first, coords.second, radiusXInCells, radiusYInCells);
 }
 
 template<typename T>
-const std::vector<T *> GridPartition<T>::getItemsNearCoords(
+std::vector<T *> GridPartition<T>::getItemsNearCoords(
 	unsigned int col, unsigned int row,
 	unsigned int radiusXInCells, unsigned int radiusYInCells) const
 {
@@ -120,7 +120,7 @@ const std::vector<T *> GridPartition<T>::getItemsNearCoords(
 }
 
 template<typename T>
-const std::pair<unsigned int, unsigned int> GridPartition<T>::posToCoords(float x, float y) const
+std::pair<unsigned int, unsigned int> GridPartition<T>::posToCoords(float x, float y) const
 {
 	return std::make_pair<unsigned int, unsigned int>(
 		static_cast<unsigned int>(x / cellSizeInPixels_),
@@ -136,7 +136,7 @@ unsigned int GridPartition<T>::spatialHashCoords_(unsigned int col, unsigned int
 template<typename T>
 unsigned int GridPartition<T>::spatialHashPos_(float x, float y)
 {
-	std::pair<unsigned int, unsigned int> coords = this->posToCoords(x, y);
+	std::pair<unsigned int, unsigned int> coords = std::move(this->posToCoords(x, y));
 
 	return this->spatialHashCoords_(coords.first, coords.second);
 }

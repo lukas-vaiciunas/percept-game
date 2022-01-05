@@ -19,7 +19,7 @@ void GameStateLoss::updateOnTick(GameDriverState &game)
 	game.gameEventQueue_.dispatch();
 
 	game.particlePool_.updateOnTick(cX, cY, visibleRadius);
-	game.bulletPool_.updateOnTick(cX, cY, visibleRadius, game.level_.possibleCollidableTiles());
+	game.bulletPool_.updateOnTick(cX, cY, visibleRadius, game.level_.getCollidableTileObjectData().getPossibleObjects());
 	game.level_.updateOnTick(game.player_, game.bulletPool_, game.particlePool_, game.gameEventQueue_, cX, cY, visibleRadius);
 }
 

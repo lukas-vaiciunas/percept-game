@@ -12,6 +12,8 @@ private:
 public:
 	ScenicTile(float x, float y, float width, float height, unsigned int imageId);
 
+	ScenicTile *clone() const override;
+
 	void render(const ImageData &imageData) const override;
 	void renderTinted(const ImageData &imageData, const ALLEGRO_COLOR &tint) const override;
 

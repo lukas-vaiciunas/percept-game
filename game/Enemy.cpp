@@ -13,6 +13,7 @@ Enemy::Enemy(
 	unsigned int itemLootTableId)
 	:
 	Entity(x, y, width, height, speed, health, 1),
+	Cloneable(),
 	itemLootTableId_(itemLootTableId)
 {}
 

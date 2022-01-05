@@ -3,9 +3,12 @@
 class ItemData;
 
 #include "Collidable.h"
+#include "Cloneable.h"
 #include "GridPartition.h"
 
-class ItemDrop : public Collidable
+class ItemDrop :
+	public Collidable,
+	public Cloneable
 {
 private:
 	std::pair<unsigned int, unsigned int> coords_;
@@ -29,6 +32,8 @@ public:
 		unsigned int itemId,
 		const ItemData &itemData,
 		const GridPartition<ItemDrop> &itemDropPartition);
+
+	ItemDrop *clone() const override;
 
 	void updateOnTick(GridPartition<ItemDrop> &itemDropPartition);
 

@@ -1,70 +1,88 @@
 #pragma once
 
 #include <vector>
+#include "ChunkInfo.h"
 #include "ScenicTile.h"
 #include "CollidableTile.h"
 #include "EnemySpawner.h"
 #include "Enemy.h"
-#include "GridPartition.h"
 #include "ImageData.h"
 #include "ItemDrop.h"
 #include "ItemData.h"
 #include "ItemLootTableData.h"
 #include "Door.h"
+#include "GenericLevelObjectData.h"
+#include "DiscoverableLevelObjectData.h"
+#include "InteractableLevelObjectData.h"
+#include "DiscoverableInteractableLevelObjectData.h"
 
 class Level
 {
 private:
+	std::vector<std::vector<ChunkInfo>> chunks_;
+
+	std::vector<EnemySpawner> enemySpawners_;
+
 	ImageData imageData_;
 	ItemData itemData_;
 	ItemLootTableData itemLootTableData_;
 
-	GridPartition<ScenicTile> scenicTilesPartition_;
-	std::vector<ScenicTile *> possibleScenicTiles_;
-	std::vector<size_t> visibleScenicTileIndices_;
-	std::vector<size_t> discoveredScenicTileIndices_;
+	DiscoverableLevelObjectData<ScenicTile> scenicTileObjectData_;
+	DiscoverableLevelObjectData<CollidableTile> collidableTileObjectData_;
+	GenericLevelObjectData<Enemy> enemyObjectData_;
+	InteractableLevelObjectData<ItemDrop> itemDropObjectData_;
+	DiscoverableInteractableLevelObjectData<Door> doorObjectData_;
 
-	GridPartition<CollidableTile> collidableTilesPartition_;
-	std::vector<CollidableTile *> possibleCollidableTiles_;
-	std::vector<size_t> visibleCollidableTileIndices_;
-	std::vector<size_t> discoveredCollidableTileIndices_;
-
-	std::vector<EnemySpawner> enemySpawners_;
-	GridPartition<Enemy> enemyPartition_;
-	std::vector<Enemy *> possibleEnemies_;
-	std::vector<size_t> visibleEnemyIndices_;
-
-	GridPartition<ItemDrop> itemDropPartition_;
-	std::vector<ItemDrop *> possibleItemDrops_;
-	std::vector<size_t> visibleItemDropIndices_;
-
-	GridPartition<Door> doorPartition_;
-	std::vector<Door *> possibleDoors_;
-	std::vector<size_t> visibleDoorIndices_;
-	std::vector<size_t> discoveredDoorIndices_;
-
-	std::pair<unsigned int, unsigned int> oldCoords_;
+	std::pair<unsigned int, unsigned int> partitionCoords_;
+	std::pair<unsigned int, unsigned int> chunkCoords_;
 
 	float spawnX_;
 	float spawnY_;
 
+	unsigned int chunkWidthInTiles_;
+	unsigned int chunkHeightInTiles_;
+
 	unsigned int widthInTiles_;
 	unsigned int heightInTiles_;
 
-	bool isPlayerHoveringItemDrop_;
-	unsigned int hoveredItemDropIndex_;
+	void generate_(const char *const levelPath, unsigned int difficultyMult);
 
-	bool isPlayerHoveringDoor_;
-	unsigned int hoveredDoorIndex_;
+	void readTilesScenic_(
+		std::ifstream &inFile,
+		std::istringstream &iss,
+		std::string &line,
+		ALLEGRO_BITMAP *const sheetBitmap);
 
-	void updateItemDropsVisibility_(const Player &player, float cX, float cY, float visibleRadius);
-	void updateDoorsPossibility_();
-	void updateDoorsVisibility_(const Player &player, float cX, float cY, float visibleRadius);
+	void readTilesCollidable_(
+		std::ifstream &inFile,
+		std::istringstream &iss,
+		std::string &line,
+		ALLEGRO_BITMAP *const sheetBitmap,
+		std::unordered_map<unsigned int, bool> &collidableIds);
+
+	void readItems_(
+		std::ifstream &inFile,
+		std::istringstream &iss,
+		std::string &line);
+
+	void readItemLootTables_(
+		std::ifstream &inFile,
+		std::istringstream &iss,
+		std::string &line);
+
+	void readLayout_(
+		std::ifstream &inFile,
+		std::istringstream &iss,
+		std::string &line,
+		const std::uniform_int_distribution<unsigned int> &fillerIdDis,
+		std::mt19937 &eng,
+		const std::unordered_map<unsigned int, bool> &collidableIds,
+		unsigned int chunkCol,
+		unsigned int chunkRow,
+		unsigned int idFiller);
 public:
 	Level();
 	Level(const char *const levelPath, unsigned int difficultyMult);
-
-	void generate(const char *const levelPath, unsigned int difficultyMult);
 
 	void updateOnTick(
 		const Player &player,
@@ -73,14 +91,14 @@ public:
 		EventQueue &gameEventQueue,
 		float cX, float cY, float visibleRadius);
 
-	void updateOnPlayerMove(const Player &player, float cX, float cY, float visibleRadius);
+	void updateOnPlayerMove(const Collidable &player, float cX, float cY, float visibleRadius);
 	void updatePossibility();
-	void updateVisibility(const Player &player, float cX, float cY, float visibleRadius);
+	void updateVisibility(const Collidable &player, float cX, float cY, float visibleRadius);
 	void updateCoords(float cX, float cY);
 
-	void removeHoveredItemDrop(const Player &player, float cX, float cY, float visibleRadius);
+	void removeHoveredItemDrop(const Collidable &player, float cX, float cY, float visibleRadius);
 
-	void spawnDoor(Door *const door, const Player &player, float cX, float cY, float visibleRadius);
+	void spawnDoor(Door *const door, const Collidable &player, float cX, float cY, float visibleRadius);
 
 	void render() const;
 
@@ -90,10 +108,10 @@ public:
 	unsigned int widthInTiles() const;
 	unsigned int heightInTiles() const;
 
-	const std::vector<CollidableTile *> &possibleCollidableTiles() const;
-	const std::vector<size_t> &visibleCollidableTileIndices() const;
-	bool isPlayerHoveringItemDrop() const;
-	const Item &hoveredItem() const;
-	bool isPlayerHoveringDoor() const;
-	const Door &hoveredDoor() const;
+	const std::vector<std::vector<ChunkInfo>> &getChunks() const;
+	const ImageData &getImageData() const;
+	const DiscoverableLevelObjectData<CollidableTile> &getCollidableTileObjectData() const;
+	const InteractableLevelObjectData<ItemDrop> &getItemDropObjectData() const;
+	const DiscoverableInteractableLevelObjectData<Door> &getDoorObjectData() const;
+	const Item &getHoveredItem() const;
 };

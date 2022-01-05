@@ -78,6 +78,8 @@ public:
 	Boss &operator=(const Boss &other);
 	~Boss();
 
+	Boss *clone() const override;
+
 	void updateOnTick(
 		const Player &player,
 		BulletPool &bulletPool,

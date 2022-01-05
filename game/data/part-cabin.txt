@@ -14,8 +14,8 @@ TILES_COLLIDABLE
 }
 ITEMS
 {
-	1 ++HP img/icon-heart-half.png HealthItem 1
-	2 ++HP img/icon-heart-full.png HealthItem 2
+	1 ++HP img/icon-item-heart-half.png HealthItem 1
+	2 ++HP img/icon-item-heart-full.png HealthItem 2
 	3 ++ATK img/icon-bullet.png StatItem Damage Add 1
 	4 ++HPMAX img/icon-gold-heart-full.png StatItem MaxHealth Add 2
 	5 --HPMAX img/icon-cactus.png StatItem MaxHealth Subtract 2

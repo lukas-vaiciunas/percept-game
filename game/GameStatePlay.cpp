@@ -23,8 +23,8 @@ void GameStatePlay::updateOnTick(GameDriverState &game)
 		game.bulletPool_,
 		game.particlePool_,
 		game.healthDisplay_,
-		game.level_.possibleCollidableTiles(),
-		game.level_.visibleCollidableTileIndices(),
+		game.level_.getCollidableTileObjectData().getPossibleObjects(),
+		game.level_.getCollidableTileObjectData().getVisibleObjectIndices(),
 		game.gameEventQueue_,
 		game.level_.widthInTiles() * 16.0f,
 		game.level_.heightInTiles() * 16.0f);
@@ -32,6 +32,7 @@ void GameStatePlay::updateOnTick(GameDriverState &game)
 	if (game.player_.isMoving())
 	{
 		game.level_.updateOnPlayerMove(game.player_, cX, cY, visibleRadius);
+		game.minimapDisplay_.updateOnPlayerMove(game.player_.x(), game.player_.y());
 		game.centerCameraOnPlayer_();
 
 		this->updateStatus_(game);
@@ -41,7 +42,7 @@ void GameStatePlay::updateOnTick(GameDriverState &game)
 	}
 
 	game.particlePool_.updateOnTick(cX, cY, visibleRadius);
-	game.bulletPool_.updateOnTick(cX, cY, visibleRadius, game.level_.possibleCollidableTiles());
+	game.bulletPool_.updateOnTick(cX, cY, visibleRadius, game.level_.getCollidableTileObjectData().getPossibleObjects());
 	game.level_.updateOnTick(game.player_, game.bulletPool_, game.particlePool_, game.gameEventQueue_, cX, cY, visibleRadius);
 }
 
@@ -58,19 +59,19 @@ void GameStatePlay::updateOnKeyPress(GameDriverState &game, int allegroKeycode)
 {
 	if (allegroKeycode == ALLEGRO_KEY_F)
 	{
-		if (game.level_.isPlayerHoveringItemDrop())
+		if (game.level_.getItemDropObjectData().isPlayerHoveringObject())
 		{
 			float visibleRadius = 64.0f;
 			float cX = game.player_.x() + game.player_.width() * 0.5f;
 			float cY = game.player_.y() + game.player_.height() * 0.5f;
 
-			game.level_.hoveredItem().use(game.gameEventQueue_);
+			game.level_.getHoveredItem().use(game.gameEventQueue_);
 			game.level_.removeHoveredItemDrop(game.player_, cX, cY, visibleRadius);
 			this->updateStatus_(game);
 		}
-		else if (game.level_.isPlayerHoveringDoor())
+		else if (game.level_.getDoorObjectData().isPlayerHoveringObject())
 		{
-			game.level_.hoveredDoor().open(game.gameEventQueue_);
+			game.level_.getDoorObjectData().getHoveredObject().open(game.gameEventQueue_);
 			this->updateStatus_(game);
 		}
 	}
@@ -111,6 +112,7 @@ void GameStatePlay::render(const GameDriverState &game) const
 	al_use_transform(&hudTrans);
 
 	game.healthDisplay_.render();
+	game.minimapDisplay_.render(game.level_.getChunks(), game.level_.getImageData());
 
 	al_identity_transform(&hudTrans);
 	al_use_transform(&hudTrans);
@@ -131,12 +133,12 @@ void GameStatePlay::render(const GameDriverState &game) const
 void GameStatePlay::updateStatus_(const GameDriverState &game)
 {
 	isThereStatus_ = false;
-	if (game.level_.isPlayerHoveringItemDrop())
+	if (game.level_.getItemDropObjectData().isPlayerHoveringObject())
 	{
 		isThereStatus_ = true;
-		statusString_ = "[F] Get Item (" + game.level_.hoveredItem().statusString() + ")";
+		statusString_ = "[F] Get Item (" + game.level_.getHoveredItem().statusString() + ")";
 	}
-	else if (game.level_.isPlayerHoveringDoor())
+	else if (game.level_.getDoorObjectData().isPlayerHoveringObject())
 	{
 		isThereStatus_ = true;
 		statusString_ = "[F] Enter Portal";

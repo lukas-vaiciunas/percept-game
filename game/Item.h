@@ -3,9 +3,10 @@
 class EventQueue;
 
 #include <string>
+#include "Cloneable.h"
 #include "Image.h"
 
-class Item
+class Item : public Cloneable
 {
 private:
 	const std::string statusString_;
@@ -14,7 +15,7 @@ public:
 	Item(const std::string &statusString, const Image &image);
 	virtual ~Item() {}
 
-	virtual Item *clone() const = 0;
+	virtual Item *clone() const override = 0;
 
 	virtual void use(EventQueue &gameEventQueue) const = 0;
 

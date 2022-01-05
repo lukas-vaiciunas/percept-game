@@ -22,7 +22,7 @@ Boss::Boss(
 	Enemy(x, y, width, height, speed, health, itemLootTableId),
 	nextLevelPath_(nextLevelPath),
 	animation_(nullptr),
-	coords_(enemyPartition.posToCoords(x + width * 0.5f, y + height * 0.5f)),
+	coords_(std::move(enemyPartition.posToCoords(x + width * 0.5f, y + height * 0.5f))),
 	phase_(Phase::Circle),
 	phaseAlarm_(numPhaseTicks),
 	restAlarm_(numRestTicks),
@@ -83,6 +83,11 @@ Boss &Boss::operator=(const Boss &other)
 Boss::~Boss()
 {
 	delete animation_;
+}
+
+Boss *Boss::clone() const
+{
+	return new Boss(*this);
 }
 
 void Boss::updateOnTick(

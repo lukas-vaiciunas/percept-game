@@ -27,7 +27,7 @@ MobileEnemy::MobileEnemy(
 	spawnerSource_(spawnerSource),
 	attackAlarm_(numAttackTicks),
 	stunAlarm_(numStunTicks),
-	oldCoords_(enemyPartition.posToCoords(x + width * 0.5f, y + height * 0.5f)),
+	oldCoords_(std::move(enemyPartition.posToCoords(x + width * 0.5f, y + height * 0.5f))),
 	idleRadius_(idleRadius),
 	chaseRadius_(chaseRadius),
 	holdRadius_(holdRadius),
@@ -79,7 +79,7 @@ MobileEnemy::MobileEnemy(
 	animations_(other.animations_),
 	attackAlarm_(other.attackAlarm_.targetNumTicks()),
 	stunAlarm_(other.stunAlarm_.targetNumTicks()),
-	oldCoords_(enemyPartition.posToCoords(x + other.width() * 0.5f, y + other.height() * 0.5f)),
+	oldCoords_(std::move(enemyPartition.posToCoords(x + other.width() * 0.5f, y + other.height() * 0.5f))),
 	idleRadius_(other.idleRadius_),
 	chaseRadius_(other.chaseRadius_),
 	holdRadius_(other.holdRadius_),
@@ -91,6 +91,11 @@ MobileEnemy::MobileEnemy(
 	animationIndex_(0),
 	renderFlag_(0)
 {}
+
+MobileEnemy *MobileEnemy::clone() const
+{
+	return new MobileEnemy(*this);
+}
 
 void MobileEnemy::updateOnTick(
 	const Player &player,
@@ -365,15 +370,16 @@ void MobileEnemy::updateAttacking_(BulletPool &bulletPool, float angleRadToPlaye
 
 void MobileEnemy::updateOnMove_(GridPartition<Enemy> &enemyPartition)
 {
-	std::pair<unsigned int, unsigned int> newCoords = enemyPartition.posToCoords(
-		this->x() + this->width() * 0.5f,
-		this->y() + this->height() * 0.5f);
+	std::pair<unsigned int, unsigned int> newCoords = std::move(
+		enemyPartition.posToCoords(
+			this->x() + this->width() * 0.5f,
+			this->y() + this->height() * 0.5f));
 
 	if (newCoords != oldCoords_)
 	{
 		enemyPartition.removeAtCoords(oldCoords_, this);
 		enemyPartition.addAtCoords(newCoords, this);
-		oldCoords_ = newCoords;
+		oldCoords_ = std::move(newCoords);
 	}
 }
 

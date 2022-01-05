@@ -101,6 +101,8 @@ public:
 		const GridPartition<Enemy> &enemyPartition,
 		EnemySpawner *const spawnerSource);
 
+	MobileEnemy *clone() const override;
+
 	void updateOnTick(
 		const Player &player,
 		BulletPool &bulletPool,

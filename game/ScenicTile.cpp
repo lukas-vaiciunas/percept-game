@@ -8,6 +8,11 @@ ScenicTile::ScenicTile(float x, float y, float width, float height, unsigned int
 	height_(height)
 {}
 
+ScenicTile *ScenicTile::clone() const
+{
+	return new ScenicTile(*this);
+}
+
 void ScenicTile::render(const ImageData &imageData) const
 {
 	this->render_(x_, y_, imageData);

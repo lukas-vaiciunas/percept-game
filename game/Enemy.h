@@ -9,10 +9,13 @@ class ItemDrop;
 class EventQueue;
 
 #include "Entity.h"
+#include "Cloneable.h"
 #include "TickAlarm.h"
 #include "GridPartition.h"
 
-class Enemy : public Entity
+class Enemy :
+	public Entity,
+	public Cloneable
 {
 private:
 	unsigned int itemLootTableId_;
@@ -32,6 +35,8 @@ public:
 		unsigned int itemLootTableId);
 
 	virtual ~Enemy() {}
+
+	virtual Enemy *clone() const override = 0;
 
 	virtual void updateOnTick(
 		const Player &player,

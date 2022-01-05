@@ -11,9 +11,11 @@ ItemDrop::ItemDrop(
 	const GridPartition<ItemDrop> &itemDropPartition)
 	:
 	Collidable(x, y, itemData.get(itemId).image().width(), itemData.get(itemId).image().height()),
-	coords_(itemDropPartition.posToCoords(
-		this->x() + this->width() * 0.5f,
-		this->y() + this->height() * 0.5f)),
+	coords_(
+		std::move(
+			itemDropPartition.posToCoords(
+				this->x() + this->width() * 0.5f,
+				this->y() + this->height() * 0.5f))),
 	itemId_(itemId),
 	maxY_(maxY),
 	velX_(velX),
@@ -21,6 +23,11 @@ ItemDrop::ItemDrop(
 	accY_(accY),
 	isMoving_(true)
 {}
+
+ItemDrop *ItemDrop::clone() const
+{
+	return new ItemDrop(*this);
+}
 
 void ItemDrop::updateOnTick(GridPartition<ItemDrop> &itemDropPartition)
 {
@@ -63,15 +70,16 @@ unsigned int ItemDrop::itemId() const
 
 void ItemDrop::updateOnMove_(GridPartition<ItemDrop> &itemDropPartition)
 {
-	std::pair<unsigned int, unsigned int> newCoords = itemDropPartition.posToCoords(
-		this->x() + this->width() * 0.5f,
-		this->y() + this->height() * 0.5f);
+	std::pair<unsigned int, unsigned int> newCoords = std::move(
+		itemDropPartition.posToCoords(
+			this->x() + this->width() * 0.5f,
+			this->y() + this->height() * 0.5f));
 
 	if (coords_ != newCoords)
 	{
 		itemDropPartition.removeAtCoords(coords_, this);
 		itemDropPartition.addAtCoords(newCoords, this);
 
-		coords_ = newCoords;
+		coords_ = std::move(newCoords);
 	}
 }

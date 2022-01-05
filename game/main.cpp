@@ -59,7 +59,7 @@ int main(void)
 	if (!al_init_ttf_addon())
 		return -1;
 
-	al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+	//al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 	configure();
 
 	display = al_create_display(Config::displayWidth, Config::displayHeight);
@@ -140,11 +140,14 @@ void configure()
 	ALLEGRO_MONITOR_INFO monitorInfo;
 	al_get_monitor_info(0, &monitorInfo);
 
-	Config::displayWidth = monitorInfo.x2 - monitorInfo.x1;
-	Config::displayHeight = monitorInfo.y2 - monitorInfo.y1;
+	//Config::displayWidth = monitorInfo.x2 - monitorInfo.x1;
+	//Config::displayHeight = monitorInfo.y2 - monitorInfo.y1;
+
+	Config::displayWidth = 1280;
+	Config::displayHeight = 720;
 
 	Config::gameScale = std::floorf((Config::displayWidth + Config::displayHeight) * 0.5f * 0.005f);
-	Config::hudScale = Config::gameScale + 5.0f;
+	Config::hudScale = Config::gameScale + 2.0f;
 
 	Config::smallFontSize = std::floorf((Config::displayWidth + Config::displayHeight) * 0.5f * 0.025f / 16.0f) * 16.0f;
 	Config::mediumFontSize = Config::smallFontSize * 2;

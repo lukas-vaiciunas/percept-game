@@ -9,6 +9,8 @@ private:
 	std::vector<T *> items_;
 public:
 	GridPartitionCell() {}
+	GridPartitionCell(const GridPartitionCell<T> &other);
+	GridPartitionCell<T> &operator=(const GridPartitionCell<T> &other);
 	~GridPartitionCell();
 
 	void add(T *const item);
@@ -16,6 +18,29 @@ public:
 
 	const std::vector<T *> &getItems() const;
 };
+
+template<typename T>
+GridPartitionCell<T>::GridPartitionCell(const GridPartitionCell<T> &other)
+{
+	for (auto it = other.items_.cbegin(); it != other.items_.cend(); ++it)
+		items_.push_back((*it)->clone());
+}
+
+template<typename T>
+GridPartitionCell<T> &GridPartitionCell<T>::operator=(const GridPartitionCell<T> &other)
+{
+	std::vector<T *> newItems;
+
+	for (auto it = other.items_.cbegin(); it != other.items_.cend(); ++it)
+		newItems.push_back((*it)->clone());
+
+	for (auto it = items_.begin(); it != items_.end(); ++it)
+		delete *it;
+
+	std::swap(items_, newItems);
+
+	return *this;
+}
 
 template<typename T>
 GridPartitionCell<T>::~GridPartitionCell()
